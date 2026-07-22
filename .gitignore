@@ -25,3 +25,6 @@ pnpm-lock.yaml
 # cloudflare
 .wrangler
 .vercel
+
+# build info incremental do tsc
+*.tsbuildinfo
