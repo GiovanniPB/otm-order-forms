@@ -5,11 +5,11 @@ export interface ReservationEmail {
   email_to: string;
 }
 
-/** Monta o link mailto: com assunto e corpo já preenchidos. */
+/** Monta o link mailto: com assunto e corpo já preenchidos.
+ * Usa encodeURIComponent (espaço → %20). NÃO usar URLSearchParams: ele codifica
+ * espaço como "+", que clientes de e-mail mostram literalmente no corpo. */
 export function buildMailtoHref(email: ReservationEmail): string {
-  const params = new URLSearchParams({
-    subject: email.email_subject,
-    body: email.email_body
-  });
-  return `mailto:${email.email_to}?${params.toString()}`;
+  const subject = encodeURIComponent(email.email_subject);
+  const body = encodeURIComponent(email.email_body);
+  return `mailto:${email.email_to}?subject=${subject}&body=${body}`;
 }

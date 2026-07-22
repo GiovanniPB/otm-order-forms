@@ -6,14 +6,12 @@ const ERROR_MESSAGES: Record<string, string> = {
   OFERTA_INDISPONIVEL: 'Esta oferta não está mais disponível.',
   CPF_INVALIDO: 'CPF inválido. Confira os dígitos.',
   QUANTIDADE_INVALIDA: 'Quantidade inválida para esta operação.',
-  EMAIL_INVALIDO: 'E-mail inválido.',
   RESERVA_JA_EXECUTADA: 'Já existe uma reserva executada para este CPF.'
 };
 
 interface ReserveBody {
   slug?: unknown;
   cpf?: unknown;
-  email?: unknown;
   baseQuantity?: unknown;
 }
 
@@ -27,12 +25,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   const slug = typeof body.slug === 'string' ? body.slug : '';
   const cpf = typeof body.cpf === 'string' ? body.cpf : '';
-  const email = typeof body.email === 'string' ? body.email : '';
   const baseQuantity = Number(body.baseQuantity);
 
-  if (!slug || !cpf || !email || !Number.isFinite(baseQuantity)) {
+  if (!slug || !cpf || !Number.isFinite(baseQuantity)) {
     return NextResponse.json(
-      { error: 'Preencha quantidade, CPF e e-mail.' },
+      { error: 'Preencha quantidade e CPF.' },
       { status: 400 }
     );
   }
@@ -47,7 +44,6 @@ export async function POST(request: Request): Promise<NextResponse> {
   const { data, error } = await supabase.rpc('create_reservation', {
     p_slug: slug,
     p_cpf: cpf,
-    p_email: email,
     p_base_quantity: Math.trunc(baseQuantity),
     p_source_ip: ip,
     p_user_agent: userAgent
