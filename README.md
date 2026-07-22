@@ -30,14 +30,32 @@ bun run dev                  # http://localhost:3100
 bun run test                 # vitest (lógica pura: cpf, pernas)
 ```
 
-## Deploy (Cloudflare Pages)
+## Deploy (Coolify + Docker)
 
-Projeto Pages separado do CRM, domínio `ordens.otminvest.com.br`. Variáveis de
-ambiente: `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Para Next no
-Pages, usar `@cloudflare/next-on-pages` no build (a adicionar quando formos publicar).
+Container próprio via `Dockerfile` (build pack "Dockerfile" no Coolify), domínio
+`ordens.otminvest.com.br`. Build multi-stage: Bun instala/builda → runtime Node com
+o output `standalone`. O app escuta em `$PORT` (default `3100`, `HOSTNAME=0.0.0.0`).
+
+Configurar no Coolify:
+
+- **Ports Exposes:** `3100`.
+- **Environment variables** (runtime): `NEXT_PUBLIC_SUPABASE_URL` e
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`. São lidas server-side (`process.env`); como o
+  código não as referencia no client, não precisam existir em build time.
+- **Healthcheck:** já embutido no `Dockerfile` (`GET /`).
+
+Build local da imagem (quando houver Docker):
+
+```bash
+docker build -t otm-order-forms .
+docker run --rm -p 3100:3100 \
+  -e NEXT_PUBLIC_SUPABASE_URL=... -e NEXT_PUBLIC_SUPABASE_ANON_KEY=... \
+  otm-order-forms
+```
 
 ## Segurança
 
-- **Só anon key** — nunca a service-role.
+- **Só anon key** — nunca a service-role. Envs entram no runtime do Coolify, não no
+  bundle nem na imagem (o `.dockerignore` bloqueia `.env*`).
 - Escrita e leitura por RPC `SECURITY DEFINER`; a tabela `clients` nunca é exposta.
-- Rate limit + honeypot ficam na borda (Cloudflare WAF) — a adicionar no deploy.
+- Rate limit + honeypot ficam na borda (proxy do Coolify / Traefik) — a adicionar no deploy.

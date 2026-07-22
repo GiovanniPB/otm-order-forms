@@ -2,7 +2,6 @@ import { getSupabase } from '@/lib/supabase';
 import { directionLabel, type PublicOffer } from '@/lib/offer';
 import { ReservationForm } from './reservation-form';
 
-export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 async function fetchOffer(slug: string): Promise<PublicOffer | null> {

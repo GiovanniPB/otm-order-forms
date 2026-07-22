@@ -1,0 +1,23 @@
+.git
+.gitignore
+node_modules
+.next
+out
+dist
+npm-debug.log*
+*.log
+
+# nunca deixar segredos entrarem na imagem (envs vêm do Coolify em runtime)
+.env
+.env.local
+.env*.local
+
+# meta / editor
+README.md
+.vscode
+.idea
+.DS_Store
+.wrangler
+.vercel
+Dockerfile
+.dockerignore
