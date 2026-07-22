@@ -15,12 +15,9 @@ interface Props {
   offer: PublicOffer;
 }
 
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-
 export function ReservationForm({ slug, offer }: Props) {
   const [quantity, setQuantity] = useState('');
   const [cpf, setCpf] = useState('');
-  const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ReservationEmail | null>(null);
@@ -29,8 +26,7 @@ export function ReservationForm({ slug, offer }: Props) {
   const qtyNumber = Number(quantity);
   const qtyValid = isValidQuantity(qtyNumber, offer.lote_min, offer.lote_multiplo);
   const cpfValid = isValidCpf(cpf);
-  const emailValid = EMAIL_RE.test(email);
-  const canSubmit = qtyValid && cpfValid && emailValid && !submitting;
+  const canSubmit = qtyValid && cpfValid && !submitting;
 
   const legQuantities = useMemo(
     () =>
@@ -49,7 +45,7 @@ export function ReservationForm({ slug, offer }: Props) {
       const res = await fetch('/api/reserve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, cpf, email, baseQuantity: qtyNumber })
+        body: JSON.stringify({ slug, cpf, baseQuantity: qtyNumber })
       });
       const data = await res.json();
       if (!res.ok) {
@@ -134,22 +130,10 @@ export function ReservationForm({ slug, offer }: Props) {
         <p className="mt-1 text-sm text-rose-600">CPF incompleto ou inválido.</p>
       )}
 
-      <label
-        className="mb-1 mt-4 block text-sm font-medium text-ink"
-        htmlFor="email"
-      >
-        E-mail cadastrado na corretora
-      </label>
-      <input
-        id="email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="voce@exemplo.com"
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20"
-      />
-      <p className="mt-1 text-xs text-muted">
-        Use o mesmo e-mail cadastrado na sua conta — o respaldo da ordem depende disso.
+      <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-muted">
+        No próximo passo você confirma a ordem enviando um e-mail — ele precisa
+        ser enviado do <strong className="text-ink">mesmo endereço cadastrado na
+        corretora</strong>, que é o respaldo da operação.
       </p>
 
       {error && (
