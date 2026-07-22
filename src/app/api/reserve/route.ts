@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 
-export const runtime = 'edge';
-
 // Mensagens amigáveis por código de erro levantado pela RPC create_reservation.
 const ERROR_MESSAGES: Record<string, string> = {
   OFERTA_INDISPONIVEL: 'Esta oferta não está mais disponível.',
